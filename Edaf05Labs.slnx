@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="1wordladders/1wordladders.csproj" />
+  <Project Path="2hashtables/2hashtables.csproj" />
+  <Project Path="3makingfriends/3makingfriends.csproj" />
+  <Project Path="4closestpair/4closestpair.csproj" />
+  <Project Path="5gorilla/5gorilla.csproj" />
+  <Project Path="6railwayplanning/6railwayplanning.csproj" />
+</Solution>
