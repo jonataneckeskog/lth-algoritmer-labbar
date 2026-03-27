@@ -31,7 +31,7 @@ public class WordLadder
             // Does the EXISTING word connect to the NEW word?
             if (CanConnect(existingWord, newWord))
             {
-                entry.Value.Add(newWord); // We add the newWord to the existing word's edge list!
+                entry.Value.Add(newWord); // Add the newWord to the existing word's list
             }
         }
 
@@ -47,7 +47,7 @@ public class WordLadder
         // Convert target to an array so we can "cross out" letters as we match them
         char[] targetChars = target.ToCharArray();
 
-        // Loop through the last 4 letters of the source word (indices 1 through 4)
+        // Loop through the last 4 letters of the source word
         for (int i = 1; i < 5; i++)
         {
             char letterToFind = source[i];
@@ -58,17 +58,19 @@ public class WordLadder
             {
                 if (targetChars[j] == letterToFind)
                 {
-                    targetChars[j] = ' '; // Cross it out so it can't be reused!
+                    // Consume a letter from the target word. If searched for again, it
+                    // won't be present, thereby forcing an equal number of each letter.
+                    targetChars[j] = ' ';
                     matchFound = true;
                     break;
                 }
             }
 
-            // If we failed to find one of the required letters, the road is closed
+            // Failed to find one of the required letters: the road is closed
             if (!matchFound) return false;
         }
 
-        // If we survived the loop, all 4 letters were found
+        // Survived the loop: all 4 letters were found
         return true;
     }
 }
