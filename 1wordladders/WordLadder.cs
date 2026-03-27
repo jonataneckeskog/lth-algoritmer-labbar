@@ -2,13 +2,13 @@ namespace _1wordLadders;
 
 public class WordLadder
 {
-    private readonly Dictionary<string, HashSet<string>> _wordGraph;
+    private readonly Dictionary<string, IReadOnlySet<string>> _wordGraph;
 
-    public IReadOnlyDictionary<string, HashSet<string>> WordGraph => _wordGraph;
+    public IReadOnlyDictionary<string, IReadOnlySet<string>> WordGraph => _wordGraph;
 
     public WordLadder()
     {
-        _wordGraph = new Dictionary<string, HashSet<string>>();
+        _wordGraph = new Dictionary<string, IReadOnlySet<string>>();
     }
 
     /// <summary>
@@ -31,7 +31,8 @@ public class WordLadder
             // Does the EXISTING word connect to the NEW word?
             if (CanConnect(existingWord, newWord))
             {
-                entry.Value.Add(newWord); // Add the newWord to the existing word's list
+                var existingWordConnections = (HashSet<string>)entry.Value;
+                existingWordConnections.Add(newWord);
             }
         }
 
