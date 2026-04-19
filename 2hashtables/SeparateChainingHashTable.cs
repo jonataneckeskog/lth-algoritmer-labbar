@@ -93,12 +93,12 @@ public class SeparateChainingHashTable : IMyHashTable
     {
         float currentUsage = (float)_count / _capacity;
 
-        if (currentUsage < _minThreshold && _capacity > 4)
+        if (currentUsage <= _minThreshold && _capacity > 4)
         {
             _capacity /= 2;
 
         }
-        else if (currentUsage > _maxThreshold)
+        else if (currentUsage >= _maxThreshold)
         {
             _capacity *= 2;
         }
