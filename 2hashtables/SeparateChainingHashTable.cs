@@ -81,6 +81,8 @@ public class SeparateChainingHashTable : IMyHashTable
         return -1;
     }
 
+    public int Count => _count;
+
     /// <summary>
     /// Resize the HashMap based on if the current usage is above or below the pre-determined thresholds.
     /// If it's above, all data is transfered to an array of twice the size. If below, the new array is
