@@ -2,7 +2,7 @@ namespace _2hashtables;
 
 public class CostomHashTable
 {
-    private HashNode[] _data;
+    private HashNode?[] _data;
     private int _capacity;
     private int _count;
     private float _minThreshold;
@@ -11,7 +11,7 @@ public class CostomHashTable
     public CostomHashTable()
     {
         _capacity = 4;
-        _data = new HashNode[_capacity];
+        _data = new HashNode?[_capacity];
         _count = 0;
         _minThreshold = 0.25F;
         _maxThreshold = 0.75F;
@@ -19,19 +19,66 @@ public class CostomHashTable
 
     public void Add(string key, int value)
     {
-        AddInternal(new HashNode(key, value, null), _data);
+        int index = HashCode(key);
+        var searchItem = _data[index];
+
+        while (searchItem != null)
+        {
+            if (searchItem.Key == key)
+            {
+                searchItem.Value = value;
+                return;
+            }
+            searchItem = searchItem.Next;
+        }
+
+        var newNode = new HashNode(key, value, _data[index]);
+        _data[index] = newNode;
         _count++;
+
         Resize();
     }
 
     public void Remove(string key)
     {
-        throw new NotImplementedException();
+        int index = HashCode(key);
+        var searchItemCurrent = _data[index];
+
+        if (searchItemCurrent == null) return;
+        if (searchItemCurrent.Key == key)
+        {
+            _data[index] = searchItemCurrent.Next;
+            _count--;
+            return;
+        }
+
+        var searchItemNext = searchItemCurrent.Next;
+
+        while (searchItemNext != null)
+        {
+            if (searchItemNext.Key == key)
+            {
+                searchItemCurrent.Next = searchItemNext.Next;
+                _count--;
+                return;
+            }
+            searchItemCurrent = searchItemNext;
+            searchItemNext = searchItemNext.Next;
+        }
+
+        Resize();
     }
 
     public int Get(string key)
     {
-        throw new NotImplementedException();
+        var item = _data[HashCode(key)];
+
+        while (item != null)
+        {
+            if (item.Key == key) return item.Value;
+            item = item.Next;
+        }
+        return -1;
     }
 
     /// <summary>
@@ -41,7 +88,7 @@ public class CostomHashTable
     /// </summary>
     private void Resize()
     {
-        float currentUsage = _count / _capacity;
+        float currentUsage = (float)_count / _capacity;
 
         if (currentUsage < _minThreshold)
         {
@@ -57,9 +104,21 @@ public class CostomHashTable
         // Transfer data to a new array (ReHash).
         HashNode[] newData = new HashNode[_capacity];
 
-        foreach (var node in _data)
+        foreach (var headNode in _data)
         {
-            AddInternal(node, newData);
+            var current = headNode;
+
+            while (current != null)
+            {
+                var nextTemp = current.Next;
+
+                int newIndex = HashCode(current.Key);
+
+                current.Next = newData[newIndex];
+                newData[newIndex] = current;
+
+                current = nextTemp;
+            }
         }
 
         _data = newData;
@@ -68,11 +127,6 @@ public class CostomHashTable
     private int HashCode(string key)
     {
         return (key.GetHashCode() & 0x7FFFFFFF) % _capacity;
-    }
-
-    private void AddInternal(HashNode node, HashNode[] targetArray)
-    {
-        throw new NotImplementedException();
     }
 
     private class HashNode
