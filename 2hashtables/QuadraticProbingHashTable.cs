@@ -33,13 +33,15 @@ public class QuadraticProbingHashTable : IMyHashTable
     /// <param name="value"></param>
     public void Add(string key, int value)
     {
-        int index = HashCode(key);
-        int startIndex = index;
+        int startIndex = HashCode(key);
+        int index = startIndex;
         int firstTombstone = -1;
-        int q = 1;
 
-        while (_keys[index] != null)
+        for (int i = 0; i < _capacity; i++)
         {
+            index = (startIndex + i * i) % _capacity;
+            if (_keys[index] == null) break;
+
             if (_keys[index] == key && !_deleted[index])
             {
                 _values[index] = value;
@@ -49,9 +51,6 @@ public class QuadraticProbingHashTable : IMyHashTable
             {
                 firstTombstone = index;
             }
-
-            index = (index + q * q++) % _capacity;
-            if (index == startIndex) break;
         }
 
         if (firstTombstone != -1)
@@ -69,12 +68,13 @@ public class QuadraticProbingHashTable : IMyHashTable
 
     public void Remove(string key)
     {
-        int index = HashCode(key);
-        int startIndex = index;
-        int q = 1;
+        int startIndex = HashCode(key);
 
-        while (_keys[index] != null)
+        for (int i = 0; i < _capacity; i++)
         {
+            int index = (startIndex + i * i) % _capacity;
+            if (_keys[index] == null) return;
+
             if (_keys[index] == key && !_deleted[index])
             {
                 _deleted[index] = true;
@@ -83,25 +83,19 @@ public class QuadraticProbingHashTable : IMyHashTable
                 Resize();
                 return;
             }
-            index = (index + q * q++) % _capacity;
-            if (index == startIndex) break;
         }
     }
 
     public int Get(string key)
     {
-        int index = HashCode(key);
-        int startIndex = index;
-        int q = 1;
+        int startIndex = HashCode(key);
 
-        while (_keys[index] != null)
+        for (int i = 0; i < _capacity; i++)
         {
-            if (_keys[index] == key && !_deleted[index])
-            {
-                return _values[index];
-            }
-            index = (index + q * q++) % _capacity;
-            if (index == startIndex) break;
+            int index = (startIndex + i * i) % _capacity;
+
+            if (_keys[index] == null) return -1;
+            if (_keys[index] == key && !_deleted[index]) return _values[index];
         }
 
         return -1;
@@ -140,12 +134,13 @@ public class QuadraticProbingHashTable : IMyHashTable
         {
             if (_keys[i] == null || _deleted[i]) continue;
 
-            int index = HashCode(_keys[i]!);
-            int q = 1;
+            int startIndex = HashCode(_keys[i]!);
+            int index = startIndex;
 
-            while (newKeys[index] != null)
+            for (int j = 0; j < _capacity; j++)
             {
-                index = (index + q * q++) % _capacity;
+                index = (startIndex + j * j) % _capacity;
+                if (newKeys[index] == null) break;
             }
 
             newKeys[index] = _keys[i];
