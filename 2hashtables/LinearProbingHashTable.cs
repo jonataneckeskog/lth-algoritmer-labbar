@@ -21,6 +21,16 @@ public class LinearProbingHashTable : IMyHashTable
         _maxThreshold = maxThreshold;
     }
 
+    /// <summary>
+    /// Linearly scans the array from the index of the HashCode and forth,
+    /// keeping track of the first avaliable square as it goes. If a null
+    /// index is hit, we know we've never gone further so an already existing
+    /// equal item cannot exist. If a deleted index is hit, it is possible that
+    /// we at some point have added the same current item further on down the array,
+    /// and we must keep track of the first avaliable index and keep searching.
+    /// </summary>
+    /// <param name="key"></param>
+    /// <param name="value"></param>
     public void Add(string key, int value)
     {
         int index = HashCode(key);
@@ -101,6 +111,8 @@ public class LinearProbingHashTable : IMyHashTable
     /// Resize the HashMap based on if the current usage is above or below the pre-determined thresholds.
     /// If it's above, all data is transfered to an array of twice the size. If below, the new array is
     /// half the size.
+    /// Items are added to the new array like normally, except we know there are no deleted squares, nor
+    /// duplicates, so we always just place it at the first 'null' we encounter.
     /// </summary>
     private void Resize()
     {
