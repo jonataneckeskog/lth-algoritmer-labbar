@@ -1,17 +1,17 @@
 namespace _2hashtables;
 
-public class CostomHashTable
+public class SeparateChainingHashTable : IMyHashTable
 {
-    private HashNode?[] _data;
+    private HashTableNode?[] _data;
     private int _capacity;
     private int _count;
     private float _minThreshold;
     private float _maxThreshold;
 
-    public CostomHashTable()
+    public SeparateChainingHashTable()
     {
         _capacity = 4;
-        _data = new HashNode?[_capacity];
+        _data = new HashTableNode?[_capacity];
         _count = 0;
         _minThreshold = 0.25F;
         _maxThreshold = 0.75F;
@@ -32,7 +32,7 @@ public class CostomHashTable
             searchItem = searchItem.Next;
         }
 
-        var newNode = new HashNode(key, value, _data[index]);
+        var newNode = new HashTableNode(key, value, _data[index]);
         _data[index] = newNode;
         _count++;
 
@@ -102,7 +102,7 @@ public class CostomHashTable
         else return;
 
         // Transfer data to a new array (ReHash).
-        HashNode?[] newData = new HashNode?[_capacity];
+        HashTableNode?[] newData = new HashTableNode?[_capacity];
 
         foreach (var headNode in _data)
         {
@@ -127,19 +127,5 @@ public class CostomHashTable
     private int HashCode(string key)
     {
         return (key.GetHashCode() & 0x7FFFFFFF) % _capacity;
-    }
-
-    private class HashNode
-    {
-        public string Key { get; set; }
-        public int Value { get; set; }
-        public HashNode? Next { get; set; }
-
-        public HashNode(string key, int value, HashNode? next)
-        {
-            Key = key;
-            Value = value;
-            Next = next;
-        }
     }
 }
