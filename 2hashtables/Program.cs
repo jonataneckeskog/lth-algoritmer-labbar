@@ -4,7 +4,7 @@ using System.Diagnostics;
 var stopwatch = new Stopwatch();
 stopwatch.Start();
 
-var hashTable = new LinearProbingHashTable(maxThreshold: 0.75f);
+var hashTable = new QuadraticProbingHashTable(maxThreshold: 0.75f);
 
 using var reader = new StreamReader(Console.OpenStandardInput());
 int i = 0;
@@ -56,3 +56,5 @@ if (hashTable.Count > 0)
 
     Console.WriteLine($"{bestWord} {maxCount}");
 }
+
+Console.Error.WriteLine($"Time elapsed: {stopwatch.ElapsedMilliseconds} ms");
