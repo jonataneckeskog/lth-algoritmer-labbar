@@ -49,6 +49,7 @@ public class CostomHashTable
         {
             _data[index] = searchItemCurrent.Next;
             _count--;
+            Resize();
             return;
         }
 
@@ -60,13 +61,12 @@ public class CostomHashTable
             {
                 searchItemCurrent.Next = searchItemNext.Next;
                 _count--;
+                Resize();
                 return;
             }
             searchItemCurrent = searchItemNext;
             searchItemNext = searchItemNext.Next;
         }
-
-        Resize();
     }
 
     public int Get(string key)
@@ -90,7 +90,7 @@ public class CostomHashTable
     {
         float currentUsage = (float)_count / _capacity;
 
-        if (currentUsage < _minThreshold)
+        if (currentUsage < _minThreshold && _capacity > 4)
         {
             _capacity /= 2;
 
@@ -102,7 +102,7 @@ public class CostomHashTable
         else return;
 
         // Transfer data to a new array (ReHash).
-        HashNode[] newData = new HashNode[_capacity];
+        HashNode?[] newData = new HashNode?[_capacity];
 
         foreach (var headNode in _data)
         {
