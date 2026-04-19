@@ -1,9 +1,11 @@
 ﻿using _2hashtables;
+using System.Diagnostics;
 
-// HashTable, currently just the standard library one
-var hashTable = new Dictionary<string, int>();
+var stopwatch = new Stopwatch();
+stopwatch.Start();
 
-// Read words from standard input
+var hashTable = new LinearProbingHashTable(maxThreshold: 0.75f);
+
 using var reader = new StreamReader(Console.OpenStandardInput());
 int i = 0;
 string? line;
@@ -12,28 +14,31 @@ while ((line = reader.ReadLine()) != null)
 {
     string word = line.Trim();
 
-    bool isPresent = hashTable.ContainsKey(word);
+    int currentValue = hashTable.Get(word);
+    bool isPresent = currentValue != -1;
     bool removeIt = i % 16 == 0;
 
     if (isPresent)
     {
         if (removeIt) hashTable.Remove(word);
-        else hashTable[word]++;
+        else hashTable.Add(word, currentValue + 1);
     }
     else if (!removeIt)
     {
-        hashTable[word] = 1;
+        hashTable.Add(word, 1);
     }
 
     i++;
 }
+
+stopwatch.Stop();
 
 if (hashTable.Count > 0)
 {
     string? bestWord = null;
     int maxCount = -1;
 
-    foreach (var kvp in hashTable)
+    foreach (var kvp in hashTable.GetAll())
     {
         if (kvp.Value > maxCount)
         {
@@ -49,5 +54,9 @@ if (hashTable.Count > 0)
         }
     }
 
-    Console.WriteLine($"{bestWord} {maxCount}");
+    Console.WriteLine($"Best word: '{bestWord}' with {maxCount} occurrences.");
 }
+
+Console.WriteLine($"\n--- Benchmark Results ---");
+Console.WriteLine($"Time elapsed: {stopwatch.ElapsedMilliseconds} ms");
+Console.WriteLine($"Total unique words: {hashTable.Count}");

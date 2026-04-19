@@ -10,15 +10,15 @@ public class LinearProbingHashTable : IMyHashTable
     private float _minThreshold;
     private float _maxThreshold;
 
-    public LinearProbingHashTable()
+    public LinearProbingHashTable(float minThreshold = 0.25F, float maxThreshold = 0.75F)
     {
         _capacity = 4;
         _keys = new string?[_capacity];
         _values = new int[_capacity];
         _deleted = new bool[_capacity];
         _count = 0;
-        _minThreshold = 0.25F;
-        _maxThreshold = 0.75F;
+        _minThreshold = minThreshold;
+        _maxThreshold = maxThreshold;
     }
 
     public void Add(string key, int value)

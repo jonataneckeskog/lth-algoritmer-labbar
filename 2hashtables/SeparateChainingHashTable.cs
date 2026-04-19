@@ -8,13 +8,13 @@ public class SeparateChainingHashTable : IMyHashTable
     private float _minThreshold;
     private float _maxThreshold;
 
-    public SeparateChainingHashTable()
+    public SeparateChainingHashTable(float minThreshold = 0.25F, float maxThreshold = 0.75F)
     {
         _capacity = 4;
         _data = new HashTableNode?[_capacity];
         _count = 0;
-        _minThreshold = 0.25F;
-        _maxThreshold = 0.75F;
+        _minThreshold = minThreshold;
+        _maxThreshold = maxThreshold;
     }
 
     public void Add(string key, int value)
