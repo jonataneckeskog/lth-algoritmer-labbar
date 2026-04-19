@@ -131,4 +131,18 @@ public class SeparateChainingHashTable : IMyHashTable
     {
         return (key.GetHashCode() & 0x7FFFFFFF) % _capacity;
     }
+
+    public IEnumerable<(string Key, int Value)> GetAll()
+    {
+        for (int i = 0; i < _data.Length; i++)
+        {
+            var current = _data[i];
+
+            while (current != null)
+            {
+                yield return (current.Key, current.Value);
+                current = current.Next;
+            }
+        }
+    }
 }

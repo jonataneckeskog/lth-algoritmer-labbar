@@ -7,4 +7,5 @@ public interface IMyHashTable
     int Get(string key);
     int Count { get; }
     int Capacity { get; }
+    IEnumerable<(string Key, int Value)> GetAll();
 }

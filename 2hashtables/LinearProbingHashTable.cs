@@ -129,4 +129,16 @@ public class LinearProbingHashTable : IMyHashTable
     {
         return (key.GetHashCode() & 0x7FFFFFFF) % _capacity;
     }
+
+    public IEnumerable<(string Key, int Value)> GetAll()
+    {
+        for (int i = 0; i < _keys.Length; i++)
+        {
+            // Yield the key/value only if it's populated and not a tombstone
+            if (_keys[i] != null && !_deleted[i])
+            {
+                yield return (_keys[i]!, _values[i]);
+            }
+        }
+    }
 }
