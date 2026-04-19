@@ -40,7 +40,7 @@ public abstract class HashTableTestBase
     }
 
     [Fact]
-    public void RemoveItem_FromEmptyTable_DoesNothing()
+    public void RemoveNonExistentItem_DoesNothing()
     {
         _hashTable.Remove("XXX");
         Assert.Equal(0, _hashTable.Count);
@@ -67,5 +67,12 @@ public abstract class HashTableTestBase
         _hashTable.Remove("banana"); // Down to 50%
         _hashTable.Remove("cherry"); // Down to 25%, resizes back to 4 now
         Assert.Equal(4, _hashTable.Capacity);
+    }
+
+    [Fact]
+    public void Get_NonExistentKey_ReturnsMinusOne()
+    {
+        var table = CreateHashTable();
+        Assert.Equal(-1, table.Get("ghost"));
     }
 }
