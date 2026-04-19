@@ -6,4 +6,5 @@ public interface IMyHashTable
     void Remove(string key);
     int Get(string key);
     int Count { get; }
+    int Capacity { get; }
 }

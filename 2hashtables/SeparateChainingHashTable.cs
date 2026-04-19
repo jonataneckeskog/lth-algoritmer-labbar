@@ -82,6 +82,7 @@ public class SeparateChainingHashTable : IMyHashTable
     }
 
     public int Count => _count;
+    public int Capacity => _capacity;
 
     /// <summary>
     /// Resize the HashMap based on if the current usage is above or below the pre-determined thresholds.
