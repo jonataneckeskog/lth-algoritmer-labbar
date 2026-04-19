@@ -54,9 +54,5 @@ if (hashTable.Count > 0)
         }
     }
 
-    Console.WriteLine($"Best word: '{bestWord}' with {maxCount} occurrences.");
+    Console.WriteLine($"{bestWord} {maxCount}");
 }
-
-Console.WriteLine($"\n--- Benchmark Results ---");
-Console.WriteLine($"Time elapsed: {stopwatch.ElapsedMilliseconds} ms");
-Console.WriteLine($"Total unique words: {hashTable.Count}");

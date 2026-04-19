@@ -24,16 +24,28 @@ public class LinearProbingHashTable : IMyHashTable
     public void Add(string key, int value)
     {
         int index = HashCode(key);
+        int startIndex = index;
+        int firstTombstone = -1;
 
-        while (_keys[index] != null && !_deleted[index])
+        while (_keys[index] != null)
         {
-            if (_keys[index] == key)
+            if (_keys[index] == key && !_deleted[index])
             {
                 _values[index] = value;
                 return;
             }
+            if (_deleted[index] && firstTombstone == -1)
+            {
+                firstTombstone = index;
+            }
 
             index = (index + 1) % _capacity;
+            if (index == startIndex) break;
+        }
+
+        if (firstTombstone != -1)
+        {
+            index = firstTombstone;
         }
 
         _keys[index] = key;
@@ -47,6 +59,7 @@ public class LinearProbingHashTable : IMyHashTable
     public void Remove(string key)
     {
         int index = HashCode(key);
+        int startIndex = index;
 
         while (_keys[index] != null)
         {
@@ -59,12 +72,14 @@ public class LinearProbingHashTable : IMyHashTable
                 return;
             }
             index = (index + 1) % _capacity;
+            if (index == startIndex) break;
         }
     }
 
     public int Get(string key)
     {
         int index = HashCode(key);
+        int startIndex = index;
 
         while (_keys[index] != null)
         {
@@ -73,6 +88,7 @@ public class LinearProbingHashTable : IMyHashTable
                 return _values[index];
             }
             index = (index + 1) % _capacity;
+            if (index == startIndex) break;
         }
 
         return -1;
@@ -107,7 +123,7 @@ public class LinearProbingHashTable : IMyHashTable
 
         for (int i = 0; i < _keys.Length; i++)
         {
-            if (_keys[i] == null) continue;
+            if (_keys[i] == null || _deleted[i]) continue;
 
             int index = HashCode(_keys[i]!);
 
