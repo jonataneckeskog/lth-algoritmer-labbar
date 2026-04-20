@@ -39,7 +39,7 @@ public class QuadraticProbingHashTable : IMyHashTable
         int index = startIndex;
         for (int i = 0; i < _capacity; i++)
         {
-            index = (startIndex + i * i) % _capacity;
+            index = (startIndex + i * i) & (_capacity - 1);
             if (_keys[index] == null) break;
 
             if (_keys[index] == key && !_deleted[index])
@@ -72,7 +72,7 @@ public class QuadraticProbingHashTable : IMyHashTable
 
         for (int i = 0; i < _capacity; i++)
         {
-            int index = (startIndex + i * i) % _capacity;
+            int index = (startIndex + i * i) & (_capacity - 1);
             if (_keys[index] == null) return;
 
             if (_keys[index] == key && !_deleted[index])
@@ -92,7 +92,7 @@ public class QuadraticProbingHashTable : IMyHashTable
 
         for (int i = 0; i < _capacity; i++)
         {
-            int index = (startIndex + i * i) % _capacity;
+            int index = (startIndex + i * i) & (_capacity - 1);
 
             if (_keys[index] == null) return -1;
             if (_keys[index] == key && !_deleted[index]) return _values[index];
@@ -139,7 +139,7 @@ public class QuadraticProbingHashTable : IMyHashTable
             for (int j = 0; j < _capacity; j++)
             {
                 if (newKeys[index] == null) break;
-                index = (startIndex + j * j) % _capacity;
+                index = (startIndex + j * j) & (_capacity - 1);
             }
 
             newKeys[index] = _keys[i];
@@ -153,7 +153,7 @@ public class QuadraticProbingHashTable : IMyHashTable
 
     private int HashCode(string key)
     {
-        return (key.GetHashCode() & 0x7FFFFFFF) % _capacity;
+        return (key.GetHashCode() & 0x7FFFFFFF) & (_capacity - 1);
     }
 
     public IEnumerable<(string Key, int Value)> GetAll()
