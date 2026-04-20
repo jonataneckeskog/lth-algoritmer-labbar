@@ -49,7 +49,7 @@ public class LinearProbingHashTable : IMyHashTable
                 firstTombstone = index;
             }
 
-            index = (index + 1) % _capacity;
+            index = (index + 1) & (_capacity - 1);
             if (index == startIndex) break;
         }
 
@@ -81,7 +81,7 @@ public class LinearProbingHashTable : IMyHashTable
                 Resize();
                 return;
             }
-            index = (index + 1) % _capacity;
+            index = (index + 1) & (_capacity - 1);
             if (index == startIndex) break;
         }
     }
@@ -97,7 +97,7 @@ public class LinearProbingHashTable : IMyHashTable
             {
                 return _values[index];
             }
-            index = (index + 1) % _capacity;
+            index = (index + 1) & (_capacity - 1);
             if (index == startIndex) break;
         }
 
@@ -141,7 +141,7 @@ public class LinearProbingHashTable : IMyHashTable
 
             while (newKeys[index] != null)
             {
-                index = (index + 1) % _capacity;
+                index = (index + 1) & (_capacity - 1);
             }
 
             newKeys[index] = _keys[i];
@@ -155,7 +155,7 @@ public class LinearProbingHashTable : IMyHashTable
 
     private int HashCode(string key)
     {
-        return (key.GetHashCode() & 0x7FFFFFFF) % _capacity;
+        return key.GetHashCode() & 0x7FFFFFFF & (_capacity - 1);
     }
 
     public IEnumerable<(string Key, int Value)> GetAll()

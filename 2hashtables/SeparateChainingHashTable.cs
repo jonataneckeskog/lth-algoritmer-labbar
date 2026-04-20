@@ -129,7 +129,7 @@ public class SeparateChainingHashTable : IMyHashTable
 
     private int HashCode(string key)
     {
-        return (key.GetHashCode() & 0x7FFFFFFF) % _capacity;
+        return key.GetHashCode() & 0x7FFFFFFF & (_capacity - 1);
     }
 
     public IEnumerable<(string Key, int Value)> GetAll()

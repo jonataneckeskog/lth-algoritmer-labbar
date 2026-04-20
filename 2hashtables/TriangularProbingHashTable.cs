@@ -1,6 +1,6 @@
 namespace _2hashtables;
 
-public class QuadraticProbingHashTable : IMyHashTable
+public class TriangularProbingHashTable : IMyHashTable
 {
     private string?[] _keys;
     private int[] _values;
@@ -10,7 +10,7 @@ public class QuadraticProbingHashTable : IMyHashTable
     private float _minThreshold;
     private float _maxThreshold;
 
-    public QuadraticProbingHashTable(float minThreshold = 0.25F, float maxThreshold = 0.75F)
+    public TriangularProbingHashTable(float minThreshold = 0.25F, float maxThreshold = 0.75F)
     {
         _capacity = 4;
         _keys = new string?[_capacity];
@@ -21,58 +21,63 @@ public class QuadraticProbingHashTable : IMyHashTable
         _maxThreshold = maxThreshold;
     }
 
-    /// <summary>
-    /// Linearly scans the array from the index of the HashCode and forth,
-    /// keeping track of the first avaliable square as it goes. If a null
-    /// index is hit, we know we've never gone further so an already existing
-    /// equal item cannot exist. If a deleted index is hit, it is possible that
-    /// we at some point have added the same current item further on down the array,
-    /// and we must keep track of the first avaliable index and keep searching.
-    /// </summary>
-    /// <param name="key"></param>
-    /// <param name="value"></param>
     public void Add(string key, int value)
     {
         int startIndex = HashCode(key);
         int firstTombstone = -1;
+        int offset = 0;
 
-        int index = startIndex;
         for (int i = 0; i < _capacity; i++)
         {
-            index = (startIndex + i * i) % _capacity;
-            if (_keys[index] == null) break;
+            int index = (startIndex + offset) & (_capacity - 1);
+
+            if (_keys[index] == null)
+            {
+                // Found an empty spot. Use it, or the first tombstone if we found one.
+                int insertIndex = (firstTombstone != -1) ? firstTombstone : index;
+                _keys[insertIndex] = key;
+                _values[insertIndex] = value;
+                _deleted[insertIndex] = false;
+                _count++;
+                Resize();
+                return;
+            }
 
             if (_keys[index] == key && !_deleted[index])
             {
                 _values[index] = value;
                 return;
             }
+
             if (_deleted[index] && firstTombstone == -1)
             {
                 firstTombstone = index;
             }
+
+            // Prepare for next probe using triangular number sequence i*(i+1)/2
+            offset += (i + 1);
         }
 
+        // This part is reached only if the table is full of items and tombstones.
         if (firstTombstone != -1)
         {
-            index = firstTombstone;
+            _keys[firstTombstone] = key;
+            _values[firstTombstone] = value;
+            _deleted[firstTombstone] = false;
+            _count++;
+            Resize();
         }
-
-        _keys[index] = key;
-        _values[index] = value;
-        _deleted[index] = false;
-        _count++;
-
-        Resize();
+        // If no tombstone, the table is 100% full, which should be prevented by resizing.
     }
 
     public void Remove(string key)
     {
         int startIndex = HashCode(key);
+        int offset = 0;
 
         for (int i = 0; i < _capacity; i++)
         {
-            int index = (startIndex + i * i) % _capacity;
+            int index = (startIndex + offset) & (_capacity - 1);
             if (_keys[index] == null) return;
 
             if (_keys[index] == key && !_deleted[index])
@@ -83,19 +88,23 @@ public class QuadraticProbingHashTable : IMyHashTable
                 Resize();
                 return;
             }
+            offset += i + 1;
         }
     }
 
     public int Get(string key)
     {
         int startIndex = HashCode(key);
+        int offset = 0;
 
         for (int i = 0; i < _capacity; i++)
         {
-            int index = (startIndex + i * i) % _capacity;
+            int index = (startIndex + offset) & (_capacity - 1);
 
             if (_keys[index] == null) return -1;
             if (_keys[index] == key && !_deleted[index]) return _values[index];
+
+            offset += i + 1;
         }
 
         return -1;
@@ -104,21 +113,14 @@ public class QuadraticProbingHashTable : IMyHashTable
     public int Count => _count;
     public int Capacity => _capacity;
 
-    /// <summary>
-    /// Resize the HashMap based on if the current usage is above or below the pre-determined thresholds.
-    /// If it's above, all data is transfered to an array of twice the size. If below, the new array is
-    /// half the size.
-    /// Items are added to the new array like normally, except we know there are no deleted squares, nor
-    /// duplicates, so we always just place it at the first 'null' we encounter.
-    /// </summary>
     private void Resize()
     {
         float currentUsage = (float)_count / _capacity;
+        int oldCapacity = _capacity;
 
         if (currentUsage <= _minThreshold && _capacity > 4)
         {
             _capacity /= 2;
-
         }
         else if (currentUsage >= _maxThreshold)
         {
@@ -126,24 +128,27 @@ public class QuadraticProbingHashTable : IMyHashTable
         }
         else return;
 
-        // Transfer data to a new array (ReHash).
         var newKeys = new string?[_capacity];
         var newValues = new int[_capacity];
 
-        for (int i = 0; i < _keys.Length; i++)
+        for (int i = 0; i < oldCapacity; i++)
         {
             if (_keys[i] == null || _deleted[i]) continue;
 
             int startIndex = HashCode(_keys[i]!);
-            int index = startIndex;
+            int offset = 0;
+
             for (int j = 0; j < _capacity; j++)
             {
-                if (newKeys[index] == null) break;
-                index = (startIndex + j * j) % _capacity;
+                int index = (startIndex + offset) & (_capacity - 1);
+                if (newKeys[index] == null)
+                {
+                    newKeys[index] = _keys[i];
+                    newValues[index] = _values[i];
+                    break;
+                }
+                offset += j + 1;
             }
-
-            newKeys[index] = _keys[i];
-            newValues[index] = _values[i];
         }
 
         _keys = newKeys;
@@ -153,14 +158,13 @@ public class QuadraticProbingHashTable : IMyHashTable
 
     private int HashCode(string key)
     {
-        return (key.GetHashCode() & 0x7FFFFFFF) % _capacity;
+        return key.GetHashCode() & 0x7FFFFFFF & (_capacity - 1);
     }
 
     public IEnumerable<(string Key, int Value)> GetAll()
     {
         for (int i = 0; i < _keys.Length; i++)
         {
-            // Yield the key/value only if it's populated and not a tombstone
             if (_keys[i] != null && !_deleted[i])
             {
                 yield return (_keys[i]!, _values[i]);

@@ -4,7 +4,7 @@ using System.Diagnostics;
 var stopwatch = new Stopwatch();
 stopwatch.Start();
 
-var hashTable = new QuadraticProbingHashTable(maxThreshold: 0.75f);
+var hashTable = new TriangularProbingHashTable(maxThreshold: 0.75f);
 
 using var reader = new StreamReader(Console.OpenStandardInput());
 int i = 0;
