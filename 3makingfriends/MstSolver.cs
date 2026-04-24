@@ -14,8 +14,8 @@ public class MstSolver : ITimeMinimizer
     {
         _personCount = personCount;
         _edges = edges;
-        people = new int[_personCount];
-        for (int i = 0; i < _personCount; i++)
+        people = new int[_personCount + 1];
+        for (int i = 0; i <= _personCount; i++)
         {
             people[i] = i;
         }
