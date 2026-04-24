@@ -26,7 +26,7 @@ for (int i = 0; i < EdgeCount; i++)
 /// SOLVE
 /// 
 
-ITimeMinimizer solver = null!; // Initialize correct solver
+ITimeMinimizer solver = new MstSolver(PersonCount, allConnections);
 long time = solver.CalculateMinimumTime();
 
 
