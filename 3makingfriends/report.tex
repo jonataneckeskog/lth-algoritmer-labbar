@@ -14,10 +14,18 @@
 
   \section{Results}
 
-  \todo[inline]{Briefly comment the results, did the script say all your solutions were correct? Approximately how long time does it take for the program to run on the largest input? What takes the majority of the time?}
+  The script did indeed say that my solution was correct.
+  As for the time of the largest input, it's below a second. It cannot say exactly the time but it is not a lot. The absolute
+  majority of that time comes form the sorting algorithm running on the algorithms. The sorting algorithm is what makes the time
+  complexity O(M*logM) and is the major bottleneck.
 
   \section{Implementation details}
 
-  \todo[inline]{How did you implement the solution? Which data structures were used? Which modifications to these data structures were used? What is the overall running time? Why?}
+  I implemented the solution using Kruskal's algorithm. Essentially, the edges are first sorted based on length, shortest to longest.
+  We can always know that if the current shortest edge connects a new verticy to the 'friendship graph' then we should include it.
+  To keep track of the edges I used a simple array which I sorted in place, and I also included a simple array for looking up the
+  'root' of any person based on their index (number). This allowed for easily checking if a person had been added.
+  I do not really understand the question of 'overall running time'. For complexity it's O(M*logM) where M is the number of edges,
+  but as for seconds it took about 3 second on my pc to run with every input.
 
 \end{document}
