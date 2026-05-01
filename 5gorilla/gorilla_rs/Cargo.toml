@@ -4,3 +4,9 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+
+[profile.release]
+lto = true           # Link Time Optimization (huge difference)
+codegen-units = 1    # Slower compile time, faster code
+panic = "abort"      # Removes panic unwinding overhead
+opt-level = 3        # Maximum optimization (default, but good to be explicit)

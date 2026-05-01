@@ -49,14 +49,19 @@ fn main() {
     let mut word_grid = vec![0i32; 4096 * 4096];
     word_grid[0] = 0;
 
+    let mut aligned_s1: Vec<u8> = Vec::with_capacity(4096);
+    let mut aligned_s2: Vec<u8> = Vec::with_capacity(4096);
+
     for (s1, s2) in queries {
         //
         // Calculate the values for the grid
         //
 
+        let cols = s2.len() + 1;
+
         // Initialize the first row
         for i in 1..=s1.len() {
-            word_grid[i * 4096] = word_grid[(i - 1) * 4096] + GAP_PENALTY;
+            word_grid[i * cols] = word_grid[(i - 1) * cols] + GAP_PENALTY;
         }
 
         // Initialize the first column
@@ -66,8 +71,8 @@ fn main() {
 
         // Initialize the rest of the grid
         for i in 1..=s1.len() {
-            let row_offset = i * 4096;
-            let prev_row_offset = (i - 1) * 4096;
+            let row_offset = i * cols;
+            let prev_row_offset = (i - 1) * cols;
 
             for j in 1..=s2.len() {
                 // MATCH/MISMATCH logic
@@ -84,18 +89,14 @@ fn main() {
         }
 
         //
-        // Calculate the values for the grid
+        // Pathfind through the grid to get the alignment
         //
-
-        let max_len = s1.len() + s2.len();
-        let mut aligned_s1: Vec<u8> = Vec::with_capacity(max_len);
-        let mut aligned_s2: Vec<u8> = Vec::with_capacity(max_len);
 
         {
             let mut i = s1.len();
             let mut j = s2.len();
 
-            let score = |r: usize, c: usize| word_grid[r * 4096 + c];
+            let score = |r: usize, c: usize| word_grid[r * cols + c];
             let cost = |a: u8, b: u8| cost_matrix[(a as usize * 256) + b as usize];
 
             while i > 0 || j > 0 {
@@ -125,5 +126,8 @@ fn main() {
 
         // Output result
         println!("{} {}", s1_str, s2_str);
+
+        aligned_s1.clear();
+        aligned_s2.clear();
     }
 }
