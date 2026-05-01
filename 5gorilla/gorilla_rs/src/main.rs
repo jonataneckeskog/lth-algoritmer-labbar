@@ -95,30 +95,22 @@ fn main() {
             let mut i = s1.len();
             let mut j = s2.len();
 
-            while i > 0 || j > 0 {
-                let curr_score = word_grid[i * 4096 + j];
+            let score = |r: usize, c: usize| word_grid[r * 4096 + c];
+            let cost = |a: u8, b: u8| cost_matrix[(a as usize * 256) + b as usize];
 
-                // 1. Try Diagonal (Match/Mismatch)
-                if i > 0
-                    && j > 0
-                    && curr_score
-                        == word_grid[(i - 1) * 4096 + (j - 1)]
-                            + cost_matrix[(s1[i - 1] as usize * 256) + s2[j - 1] as usize]
+            while i > 0 || j > 0 {
+                if i > 0 && j > 0 && score(i, j) == score(i - 1, j - 1) + cost(s1[i - 1], s2[j - 1])
                 {
                     aligned_s1.push(s1[i - 1]);
                     aligned_s2.push(s2[j - 1]);
                     i -= 1;
                     j -= 1;
-                }
-                // 2. Try Up (Gap in s2)
-                else if i > 0 && curr_score == word_grid[(i - 1) * 4096 + j] + GAP_PENALTY {
+                } else if i > 0 && score(i, j) == score(i - 1, j) + GAP_PENALTY {
                     aligned_s1.push(s1[i - 1]);
-                    aligned_s2.push(b'*'); // Gap character
+                    aligned_s2.push(b'*');
                     i -= 1;
-                }
-                // 3. Try Left (Gap in s1)
-                else {
-                    aligned_s1.push(b'*'); // Gap character
+                } else {
+                    aligned_s1.push(b'*');
                     aligned_s2.push(s2[j - 1]);
                     j -= 1;
                 }
