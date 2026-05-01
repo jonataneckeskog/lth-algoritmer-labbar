@@ -1,5 +1,7 @@
 use std::io::{self, Read};
 
+const GAP_PENALTY: i32 = -4;
+
 fn main() {
     // --------------------
     // ---- READ INPUT ----
@@ -44,35 +46,92 @@ fn main() {
     // --- SOLVE PROBLEM ---
     // ---------------------
 
-    let mut word_grid = [0i32; 3501 * 3501];
+    let mut word_grid = vec![0i32; 4096 * 4096];
+    word_grid[0] = 0;
 
     for (s1, s2) in queries {
+        //
         // Calculate the values for the grid
-        for i in 0..s1.len() {
-            for j in 0..s2.len() {
-                let idx = i * 3501 + j;
+        //
 
-                let cost = cost_matrix[(s1[i] as usize * 256) + s2[j] as usize];
-                word_grid[idx] = cost;
+        // Initialize the first row
+        for i in 1..=s1.len() {
+            word_grid[i * 4096] = word_grid[(i - 1) * 4096] + GAP_PENALTY;
+        }
+
+        // Initialize the first column
+        for j in 1..=s2.len() {
+            word_grid[j] = word_grid[j - 1] + GAP_PENALTY;
+        }
+
+        // Initialize the rest of the grid
+        for i in 1..=s1.len() {
+            let row_offset = i * 4096;
+            let prev_row_offset = (i - 1) * 4096;
+
+            for j in 1..=s2.len() {
+                // MATCH/MISMATCH logic
+                let char_cost = cost_matrix[(s1[i - 1] as usize * 256) + s2[j - 1] as usize];
+                let diagonal = word_grid[prev_row_offset + (j - 1)] + char_cost; // Previous cost + char cost
+
+                // GAP logic
+                let down = word_grid[prev_row_offset + j] + GAP_PENALTY;
+                let right = word_grid[row_offset + (j - 1)] + GAP_PENALTY;
+
+                // Maximize the yield
+                word_grid[row_offset + j] = diagonal.max(down).max(right);
             }
         }
 
-        // Path-find through the grid
-        let mut sum = 0;
-        let mut current_location = 0;
-        let directions = [1, 4096, 4096];
-        while (current_location / 4096) + 1 < s1.len() && (current_location % 4096) + 1 < s2.len() {
-            let (min_val, chosen_dir) = directions
-                .into_iter()
-                .map(|dir| (word_grid[current_location + dir], dir))
-                .min_by_key(|&(val, _dir)| val)
-                .unwrap();
+        //
+        // Calculate the values for the grid
+        //
 
-            sum += min_val;
-            current_location += chosen_dir;
+        let max_len = s1.len() + s2.len();
+        let mut aligned_s1: Vec<u8> = Vec::with_capacity(max_len);
+        let mut aligned_s2: Vec<u8> = Vec::with_capacity(max_len);
+
+        {
+            let mut i = s1.len();
+            let mut j = s2.len();
+
+            while i > 0 || j > 0 {
+                let curr_score = word_grid[i * 4096 + j];
+
+                // 1. Try Diagonal (Match/Mismatch)
+                if i > 0
+                    && j > 0
+                    && curr_score
+                        == word_grid[(i - 1) * 4096 + (j - 1)]
+                            + cost_matrix[(s1[i - 1] as usize * 256) + s2[j - 1] as usize]
+                {
+                    aligned_s1.push(s1[i - 1]);
+                    aligned_s2.push(s2[j - 1]);
+                    i -= 1;
+                    j -= 1;
+                }
+                // 2. Try Up (Gap in s2)
+                else if i > 0 && curr_score == word_grid[(i - 1) * 4096 + j] + GAP_PENALTY {
+                    aligned_s1.push(s1[i - 1]);
+                    aligned_s2.push(b'*'); // Gap character
+                    i -= 1;
+                }
+                // 3. Try Left (Gap in s1)
+                else {
+                    aligned_s1.push(b'*'); // Gap character
+                    aligned_s2.push(s2[j - 1]);
+                    j -= 1;
+                }
+            }
         }
 
+        aligned_s1.reverse();
+        aligned_s2.reverse();
+
+        let s1_str = std::str::from_utf8(&aligned_s1).unwrap();
+        let s2_str = std::str::from_utf8(&aligned_s2).unwrap();
+
         // Output result
-        println!("{}", sum);
+        println!("{} {}", s1_str, s2_str);
     }
 }
