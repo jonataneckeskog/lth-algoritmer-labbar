@@ -14,10 +14,19 @@
 
   \section{Results}
 
-  \todo[inline]{Briefly comment the results, did the script say all your solutions were correct? Approximately how long time does it take for the program to run on the largest input? What takes the majority of the time?}
+  The script did say that all my solutions were correct. At the largest input it takes:
+  real	0m0.932s, user	0m0.950s, sys  0m0.027s
+  The majority of that time likely comes from the recursive O(nlogn) logic and input parsing. The largest input has 1 000 000 inputs,
+  so it makes somewhat sense.
 
   \section{Implementation details}
 
   \todo[inline]{How did you implement the solution? Which data structures were used? Which modifications to these data structures were used? What is the overall running time? Why?}
+
+  I implemented the solution using a recursive algorithm. It was a divide and concour algorithm which
+  used brute force for small inputs. The only data structures I used was a normal array for the initial list,
+  and then a List<Vector2Int> inside of the logic. This could be made more efficiant for sure but .NET likely does
+  a lot of optimization for me already.
+  The overall running time is about 2-2.5 seconds for all inputs.
 
 \end{document}
