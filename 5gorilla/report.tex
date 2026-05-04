@@ -14,15 +14,11 @@
 
   \section{Results}
 
-  \todo[inline]{Briefly comment the results, did the script say all your solutions were correct? Approximately how long time does it take for the program to run on the largest input? What takes the majority of the time?}
-
   I can do no wrong. Of course it was correct (after a few tries anyway). At the largest input the program
   takes about 0.18 seconds to run on my laptop from 2020. I optimized it a lot.
   The majority of that times likely comes from the logic of calculating each cell in the string grid, which can be very large.
 
   \section{Implementation details}
-
-  \todo[inline]{How did you implement the solution? Which data structures were used? Which modifications to these data structures were used? What is the overall running time? Why?}
 
   I implemented the solution using an iterative algorithm, utalizing a lot of Rusts zero cost abstraction iterators.
   Essentially, I just read in the input, calculate for the grid, and then do the backtracking pathfinding algorithm.
