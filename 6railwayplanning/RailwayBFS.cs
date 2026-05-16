@@ -2,7 +2,8 @@ namespace _6railwayplanning;
 
 public static class RailwayBFS
 {
-    public static List<T> FindShortestPath<T>(Func<T, IEnumerable<T>> getRailways, T start, T end) where T : notnull, IEquatable<T>
+    public static List<T> FindShortestPath<T>(Func<T, IEnumerable<T>> getRailways, T start, T end)
+        where T : notnull, IEquatable<T>
     {
         if (start.Equals(end)) return [];
 

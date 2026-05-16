@@ -15,6 +15,11 @@ public class NetworkEdge
         Flow = 0;
     }
 
+    public StationId GetOtherStation(int current)
+    {
+        return current == U ? V : U;
+    }
+
     public int GetResidualCapacity(int fromNode)
     {
         return fromNode == U ? Capacity - Flow : Capacity + Flow;
