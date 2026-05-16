@@ -1,4 +1,4 @@
-use std::io::{self, Read};
+use std::io::{self, BufWriter, Read, Write};
 
 const GAP_PENALTY: i32 = -4;
 
@@ -19,7 +19,7 @@ fn main() {
         .collect();
 
     let k = headers.len();
-    let mut tokens = input.split_whitespace();
+    let mut tokens = input.split_ascii_whitespace();
 
     // Skip the headers that were already processed in the iterator
     for _ in 0..k {
@@ -52,6 +52,9 @@ fn main() {
     let mut aligned_s1: Vec<u8> = Vec::with_capacity(4096);
     let mut aligned_s2: Vec<u8> = Vec::with_capacity(4096);
 
+    let stdout = io::stdout();
+    let mut out = BufWriter::new(stdout.lock());
+
     for (s1, s2) in queries {
         //
         // Calculate the values for the grid
@@ -75,16 +78,16 @@ fn main() {
             let prev_row_offset = (i - 1) * cols;
 
             for j in 1..=s2.len() {
-                // MATCH/MISMATCH logic
-                let char_cost = cost_matrix[(s1[i - 1] as usize * 256) + s2[j - 1] as usize];
-                let diagonal = word_grid[prev_row_offset + (j - 1)] + char_cost; // Previous cost + char cost
+                // Replace array[...] with *array.get_unchecked(...)
+                unsafe {
+                    let char_cost =
+                        *cost_matrix.get_unchecked((s1[i - 1] as usize * 256) + s2[j - 1] as usize);
+                    let diagonal = *word_grid.get_unchecked(prev_row_offset + (j - 1)) + char_cost;
+                    let down = *word_grid.get_unchecked(prev_row_offset + j) + GAP_PENALTY;
+                    let right = *word_grid.get_unchecked(row_offset + (j - 1)) + GAP_PENALTY;
 
-                // GAP logic
-                let down = word_grid[prev_row_offset + j] + GAP_PENALTY;
-                let right = word_grid[row_offset + (j - 1)] + GAP_PENALTY;
-
-                // Maximize the yield
-                word_grid[row_offset + j] = diagonal.max(down).max(right);
+                    *word_grid.get_unchecked_mut(row_offset + j) = diagonal.max(down).max(right);
+                }
             }
         }
 
@@ -125,9 +128,10 @@ fn main() {
         let s2_str = std::str::from_utf8(&aligned_s2).unwrap();
 
         // Output result
-        println!("{} {}", s1_str, s2_str);
+        writeln!(out, "{} {}", s1_str, s2_str).unwrap();
 
         aligned_s1.clear();
         aligned_s2.clear();
+        out.flush().unwrap();
     }
 }
