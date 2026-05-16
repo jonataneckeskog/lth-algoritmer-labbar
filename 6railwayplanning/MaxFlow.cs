@@ -2,9 +2,9 @@ namespace _6railwayplanning;
 
 public static class MaxFlow
 {
-    public static int CalculateMaxFlow(List<NetworkEdge>[] adjList, int source, int sink)
+    public static int CalculateMaxFlow(List<NetworkEdge>[] adjList, int initialFlow, int source, int sink)
     {
-        int totalFlow = 0;
+        int totalFlow = initialFlow;
 
         while (true)
         {
