@@ -11,7 +11,7 @@ int EdgeCount = scanner.NextInt();  // M
 int C = scanner.NextInt();          // C
 int RouteCount = scanner.NextInt(); // P
 
-List<Railway> edges = scanner
+List<Railway> parsedEdges = scanner
     .AsEnumerable()
     .Chunk(3)
     .Take(EdgeCount)
@@ -28,6 +28,20 @@ List<StationId> routesToRemove = scanner
     .Take(RouteCount)
     .Select(x => (StationId)x)
     .ToList();
+
+
+///
+/// PROCESS DATA
+/// 
+
+var adjacencyList = new List<NetworkEdge>[NodeCount];
+
+foreach (var rawEdge in parsedEdges)
+{
+    var edge = new NetworkEdge(rawEdge);
+    adjacencyList[edge.U].Add(edge);
+    adjacencyList[edge.V].Add(edge);
+}
 
 
 ///
