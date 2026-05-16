@@ -31,8 +31,8 @@ List<StationId> routesToRemove = scanner
 
 
 ///
-/// PROCESS DATA
-/// 
+/// SOLVE
+///
 
 var adjacencyList = new List<NetworkEdge>[NodeCount];
 
@@ -43,16 +43,11 @@ foreach (var rawEdge in parsedEdges)
     adjacencyList[edge.V].Add(edge);
 }
 
-
-///
-/// SOLVE
-///
-
-
+var maxFlow = MaxFlow.CalculateMaxFlow(adjacencyList, 0, NodeCount - 1);
 
 
 ///
 /// OUTPUT
 /// 
 
-Console.WriteLine("Hello world!");
+Console.WriteLine($"NBR_REMOVED {maxFlow}");
