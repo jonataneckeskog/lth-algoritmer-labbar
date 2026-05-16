@@ -11,22 +11,23 @@ int EdgeCount = scanner.NextInt();  // M
 int C = scanner.NextInt();          // C
 int RouteCount = scanner.NextInt(); // P
 
-Edge[] edges = scanner
+List<Railway> edges = scanner
     .AsEnumerable()
     .Chunk(3)
     .Take(EdgeCount)
-    .Select(chunk => new Edge
+    .Select(chunk => new Railway
     {
         StationU = chunk[0],
         StationV = chunk[1],
         Capacity = chunk[2]
     })
-    .ToArray();
+    .ToList();
 
-int[] routesToRemove = scanner
+List<StationId> routesToRemove = scanner
     .AsEnumerable()
     .Take(RouteCount)
-    .ToArray();
+    .Select(x => (StationId)x)
+    .ToList();
 
 
 ///

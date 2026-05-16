@@ -1,6 +1,6 @@
 namespace _6railwayplanning;
 
-public struct Edge
+public struct Railway
 {
     public int StationU;
     public int StationV;
